@@ -1,8 +1,11 @@
 import nltk
 
 from nltk.tokenize import sent_tokenize, word_tokenize
-
+'''
 with open("sample_writing.txt", "r") as myfile:
+    contents_raw = myfile.read()
+'''
+with open("Reflectivetest1.txt", "r") as myfile:
     contents_raw = myfile.read()
 
 contents = str(contents_raw)
