@@ -20,6 +20,7 @@ tokenized_word = word_tokenize(contents)
 
 from nltk.probability import FreqDist
 
+'''
 fdist = FreqDist(tokenized_word)
 
 print(fdist)
@@ -31,19 +32,37 @@ import matplotlib.pyplot as plt
 fdist.plot(30, cumulative=False)
 
 plt.show
-
 '''
+
+
+
 from nltk.corpus import stopwords
 
 stop_words = set(stopwords.words("english"))
 
 filtered_contents = []
 
-for w in tokenized_sent:
+for w in tokenized_word:
     if w not in stop_words:
         filtered_contents.append(w)
 
-print("Tokenized contents: ", tokenized_sent)
+fdist_stop = FreqDist(filtered_contents)
 
-print("Filtered contents: ", filtered_contents)
-'''
+print(fdist_stop)
+
+print(fdist_stop.most_common(10))
+
+import matplotlib.pyplot as plt
+
+fdist_stop.plot(50, cumulative=False)
+
+plt.show
+
+
+
+
+#print("Tokenized contents: ", tokenized_sent)
+
+#print("Filtered contents: ", filtered_contents)
+
+#print("Stop words: ", stop_words)
