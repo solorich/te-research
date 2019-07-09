@@ -1,10 +1,14 @@
 import nltk
 
 from nltk.tokenize import sent_tokenize, word_tokenize
+
+#Reads from a txt document with some sample writing in it not from 20x students
 '''
 with open("sample_writing.txt", "r") as myfile:
     contents_raw = myfile.read()
 '''
+
+#Reads in files from the Reflectivetest1.txt document and puts it into var content_raw
 with open("Reflectivetest1.txt", "r") as myfile:
     contents_raw = myfile.read()
 
@@ -34,11 +38,12 @@ fdist.plot(30, cumulative=False)
 plt.show
 '''
 
-
-
 from nltk.corpus import stopwords
 
 stop_words = set(stopwords.words("english"))
+punctuation = set([".", ",", "''", "''"])
+
+stop_words.update(punctuation)
 
 filtered_contents = []
 
