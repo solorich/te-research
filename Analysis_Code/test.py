@@ -3,7 +3,6 @@
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 
-
 with open("../Writings/Reflectivetest1.txt", "r") as myfile: #Reads in files from the Reflectivetest1.txt document and puts it into var content_raw
     contents_raw = myfile.read()
 
