@@ -25,12 +25,11 @@ filtered_contents = af.FilterWords(wt_content, filter_list=filter) #Filters the 
 from nltk.probability import FreqDist, DictionaryProbDist
 import numpy as np
 
-'''
-fdist_stop = FreqDist(filtered_contents)
-sorted_fd = af.SortFreqDist(fdist_stop) # Creates a frequency distribution and organizes by frequency descending
-most_common = af.MostCommon(sorted_fd) #First column is the word, second column is frequent. Defaults to 15
-af.PlotWordFrequency(most_common, 3)
-'''
+#fdist_stop = FreqDist(filtered_contents)
+#sorted_fd = af.SortFreqDist(fdist_stop) # Creates a frequency distribution and organizes by frequency descending
+#most_common = af.MostCommon(sorted_fd) #First column is the word, second column is frequent. Defaults to 15
+#af.PlotWordFrequency(most_common, 3)
+
 
 '''Content Stemming'''
 '''******************************************************'''
@@ -40,8 +39,9 @@ af.PlotWordFrequency(most_common, 3)
 
 '''Generating Ngrams'''
 '''**************************************************'''
-n=4
-ngram = list(af.Ngram(filtered_contents, n)) #Creates a list of ngrams in the filtered contents of the text
+#Shows a list of ngrams for a given value of n
+n=3
+#ngram = list(af.Ngram(filtered_contents, n)) #Creates a list of ngrams in the filtered contents of the text
 
 #print some of the entries in the list
 #for gram in ngram[:2]:
@@ -51,11 +51,18 @@ ngram = list(af.Ngram(filtered_contents, n)) #Creates a list of ngrams in the fi
 '''*******************************************************'''
 #Collocations of words in the text are measured and put into a list with the ngram and the frequency
 
-ngram_collocations = af.Collocation(filtered_contents, n) #Generates the collocations for the ngrams
+#ngram_collocations = af.Collocation(filtered_contents, n) #Generates the collocations for the ngrams
 
-for ngram in ngram_collocations[:20]: #Prints the top 20 most frequent ngrams
-    print(ngram)
+#for ngram in ngram_collocations[:20]: #Prints the top 20 most frequent ngrams
+    #print(ngram)
+
+'''Plotting Collocation Tables'''
+'''**********************************************************'''
+#Puts the top num_grams_to_plot into a plot with associated ngram
+#af.CollocationTable(ngram_collocations, num_grams_to_plot=50)
 
 '''Sentiment Analysis'''
 '''***********************************************************'''
 #This analyzes the content overall to determine if it positive, negative, or neutral
+
+af.Sentiment()

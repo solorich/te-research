@@ -120,11 +120,11 @@ def Collocation(contents, n):
         bigram_measures = BigramAssocMeasures()
         finder = BigramCollocationFinder.from_words(contents)
         scored = finder.score_ngrams(bigram_measures.raw_freq)
-    else if n==3:
+    elif n==3:
         trigram_measures = TrigramAssocMeasures()
         finder = TrigramCollocationFinder.from_words(contents)
         scored = finder.score_ngrams(trigram_measures.raw_freq)
-    else if n==4:
+    elif n==4:
         quadgram_measures = QuadgramAssocMeasures()
         finder = QuadgramCollocationFinder.from_words(contents)
         scored = finder.score_ngrams(quadgram_measures.raw_freq)
@@ -133,10 +133,52 @@ def Collocation(contents, n):
 
     return(scored)
 
-def CollocationTable()
-    import matplotlib.pyplot.table as table
+def CollocationTable(scored_gram, num_grams_to_plot=10):
+    import matplotlib.pyplot as plt
+    from matplotlib.font_manager import FontProperties
+    import numpy as np
 
+    gram = list(scored_gram)
 
-def Sentiment()
+    gram_list = []
+    freq_list = []
+    words = ""
+
+    for i in range(num_grams_to_plot):
+        #Takes the elements in the ngram and turns it  into one string
+        for k in range(len(gram[0][0])):
+            words += gram[i][0][k]+ " "
+
+        gram_list.append(words)
+        words="" #resets words in the enxt ngram
+
+        freq_list.append(gram[i][1]) #frequency associated with ngram
+
+    collocation_vals = np.column_stack((gram_list, freq_list))
+
+    col_labels = ("Bigram", "Collocation Value")
+
+    fig, ax = plt.subplots()
+
+    # Hide axes
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    ax.axis('tight')
+
+    table = plt.table(cellText = collocation_vals, colLabels = col_labels, loc="center", cellLoc="center")
+
+    for (row, col), cell in table.get_celld().items():
+        if (row == 0) or (col == -1):
+            cell.set_text_props(fontproperties=FontProperties(weight='bold'))
+
+    fig.tight_layout()
+    plt.show()
+
+def Sentiment():
+    import pandas as pd
     from nltk.classify import NaiveBayesClassifier
     from nltk.sentiment import SentimentAnalyzer
+
+    data = pd.read_csv("../Sentiment_Training/train.tsv", sep="\t")
+
+    data.Sentiment.value_counts()
