@@ -1,24 +1,37 @@
 '''Function Definitions used in the Analysis Script'''
 '''***********************************************************'''
+#Reads in responses and stores each response in an element of an array
+def ReadInResponses(file):
+    import csv
+    import numpy as np
+
+    responses = []
+
+    with open(file, encoding="utf8") as csvfile:
+        reader = csv.reader(csvfile)
+
+        for row in reader:
+            responses.append(row[0])
+
+        return(np.array(responses));
 
 #Filters out stop words and a custom list of words from a file
-def FilterWords(tokenized_word, filter_stop_words=True, filter_list=[]):
+def FilterWords(tokenized_word, filter_nltk_stop_words=False, source="../Filters/filterwords.csv"):
     from nltk.corpus import stopwords
 
-    filter_words = []
+    with open(source, "r") as myfile:
+        filter_words = myfile.read()
 
-    if filter_stop_words is True:
-        filter_words = set(stopwords.words("english")) #Makes a set with the stopwords in the english dictionary
+        filtered_contents = []
 
-    filter_words.update(filter_list)
+        if filter_nltk_stop_words is True:
+            filter_words = set(stopwords.words("english")) #Makes a set with the stopwords in the english dictionary
 
-    filtered_contents = [] #Creates an empty list
+        for w in tokenized_word: #Looks at every word in the text,
+            if w not in filter_words:
+                filtered_contents.append(w)
 
-    for w in tokenized_word: #Looks at every word in the text,
-        if w not in filter_words:
-            filtered_contents.append(w)
-
-    return(filtered_contents);
+        return(filtered_contents);
 
 #Stems each word in the writings (reduces to the base word by getting rid of -ed, -ing, etc.) Input should be the filtered contents. Normalizes the data. May remove things llike a trailing e
 def Stem(contents):
@@ -31,6 +44,19 @@ def Stem(contents):
         stemmed_contents.append(ps.stem(word))
 
     return(stemmed_contents);
+
+#Reduces words to their lemmas, ex. fantastic and great simplify to good
+def Lemmatize(contents):
+    from nltk.stem.wordnet import WordNetLemmatizer
+
+    lem = WordNetLemmatizer()
+
+    lem_content = []
+
+    for word in contents:
+        lem_content.append(lem.lemmatize(word))
+
+    return(lem_content);
 
 #Sorts the frequency distribution in ascending or descending order
 def SortFreqDist(fdist, descending=True):
@@ -174,11 +200,31 @@ def CollocationTable(scored_gram, num_grams_to_plot=10):
     fig.tight_layout()
     plt.show()
 
-def Sentiment():
-    import pandas as pd
-    from nltk.classify import NaiveBayesClassifier
-    from nltk.sentiment import SentimentAnalyzer
+def Sentiment(response):
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
+    from nltk.tokenize import sent_tokenize
+    import numpy as np
 
-    data = pd.read_csv("../Sentiment_Training/train.tsv", sep="\t")
+    sia = SIA()
 
-    data.Sentiment.value_counts()
+    sent_scores = []
+
+    st_response = list(sent_tokenize(response))
+
+    for sentence in st_response:
+        sent_scores.append(sia.polarity_scores(sentence))
+
+    sent_scores = list(sent_scores)
+
+    response_sentiment = np.column_stack((st_response, sent_scores))
+
+    return(response_sentiment);
+
+def PrintSentimentValues(response_array):
+
+    for i in range(len(response_array)):
+        print("*******Response number*******", i, "\n")
+        sentiment_scores = Sentiment(response_array[i])
+
+        for j in range(len(sentiment_scores)):
+            print("Sentence:", sentiment_scores[j][0], "Sentiment", sentiment_scores[j][1], "\n")

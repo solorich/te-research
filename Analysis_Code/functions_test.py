@@ -8,17 +8,33 @@ from nltk.tokenize import word_tokenize
 with open("../Writings/Reflectivetest1.txt", "r") as myfile:
     contents_raw = myfile.read()
 
+'''Reading in individual responses'''
+'''*****************************************************'''
+response_array = af.ReadInResponses("../Writings/IndvResponses.csv")
+#print(response_array[0])
+
 '''Filtering Text'''
 '''******************************************************'''
 #Can filter out stopwords or a custom list
 
-wt_content = word_tokenize(str(contents_raw)) #Turns the raw contents into word tokenized content
+#wt_content = word_tokenize(str(contents_raw)) #Turns the raw contents into word tokenized content
 
-#Custom list of words and symbols to filter out
-filter = []
-filter = set(["The", "an", "a", "me", ".", "''", "``", "(", ")", "\'", "`", ",", "Â"])
+#af.FilterWords(wt_content)
 
-filtered_contents = af.FilterWords(wt_content, filter_list=filter) #Filters the strings in filter from the contents
+#filtered_contents = af.FilterWords(wt_content, filter_list=filter, filter_stop_words=True) #Filters the strings in filter from the contents
+
+'''Lemmatization'''
+'''*******************************************************'''
+#description
+
+#lem_content = af.Lemmatize(wt_content)
+#print(lem_content)
+
+'''Part of Speech Tagging'''
+'''********************************************************'''
+#Tags each word in the content with its appropriate part of speach
+#from nltk import pos_tag
+#print(pos_tag(wt_content))
 
 '''Creating frequency distribution and plotting it'''
 '''********************************************************'''
@@ -29,7 +45,6 @@ import numpy as np
 #sorted_fd = af.SortFreqDist(fdist_stop) # Creates a frequency distribution and organizes by frequency descending
 #most_common = af.MostCommon(sorted_fd) #First column is the word, second column is frequent. Defaults to 15
 #af.PlotWordFrequency(most_common, 3)
-
 
 '''Content Stemming'''
 '''******************************************************'''
@@ -59,10 +74,14 @@ n=3
 '''Plotting Collocation Tables'''
 '''**********************************************************'''
 #Puts the top num_grams_to_plot into a plot with associated ngram
-#af.CollocationTable(ngram_collocations, num_grams_to_plot=50)
+#af.CollocationTable(ngram_collocations, num_grams_to_plot=20)
 
 '''Sentiment Analysis'''
 '''***********************************************************'''
 #This analyzes the content overall to determine if it positive, negative, or neutral
+#sentiment_scores = af.Sentiment(response_array[0])
 
-af.Sentiment()
+#len(response_array)
+
+af.PrintSentimentValues(response_array)
+#print("Sentence:", sentiment_scores[5][])
