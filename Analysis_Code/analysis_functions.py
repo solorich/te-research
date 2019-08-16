@@ -100,7 +100,6 @@ def MostCommon(sorted_array, num_words=15):
     mc_array = np.column_stack((some_words, some_freqs)) #table of most common words
     return(mc_array);
 
-
 #Plots the frequency of the top n words
 def PlotWordFrequency(mc_array, precision="4"):
     import matplotlib.pyplot as plt
@@ -126,7 +125,6 @@ def PlotWordFrequency(mc_array, precision="4"):
     plt.show()
 
     return;
-
 
 #Takes a list of tokenized words
 def Ngram(contents, n="2"):
@@ -200,7 +198,8 @@ def CollocationTable(scored_gram, num_grams_to_plot=10):
     fig.tight_layout()
     plt.show()
 
-def Sentiment(response):
+#takes in a single student's response and returns the sentiment of each sentence in that response
+def ResponseSA(response):
     from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
     from nltk.tokenize import sent_tokenize
     import numpy as np
@@ -220,11 +219,132 @@ def Sentiment(response):
 
     return(response_sentiment);
 
-def PrintSentimentValues(response_array):
+#Does Sentiment Analysis on each response submitted by students
+def AllResponseSA(response_array):
+    sa_responses = []
 
     for i in range(len(response_array)):
+        sa_responses.append(ResponseSA(response_array[i]))
+
+    return(sa_responses);
+
+def PrintSingleResponseSV(response):
+    sentiment_score = ResponseSA(response)
+
+    for i in range(len(sentiment_score)):
+        print("Sentence: ", sentiment_score[i][0],"\nSentiment: ", sentiment_score[i][1], "\n")
+
+def PrintAllResponseSV(response_array):
+    for i in range(len(response_array)):
         print("*******Response number*******", i, "\n")
-        sentiment_scores = Sentiment(response_array[i])
+        sentiment_scores = ResponseSA(response_array[i])
 
         for j in range(len(sentiment_scores)):
-            print("Sentence:", sentiment_scores[j][0], "Sentiment", sentiment_scores[j][1], "\n")
+            print("Sentence: ", sentiment_scores[j][0], "\n Sentiment: ", sentiment_scores[j][1], "\n")
+
+
+#Takes in the array with sentiment scores from each sentence and takes the average
+def ResponseAvgCompoundScore(response):
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
+    from nltk.tokenize import sent_tokenize
+    import numpy as np
+
+    st_response = list(sent_tokenize(response)) #Sentence tokenized responses
+
+    sia = SIA()
+    avg = 0
+
+    for sentence in st_response:
+        avg += sia.polarity_scores(sentence)['compound']
+
+    avg = avg/len(st_response)
+
+    return(avg);
+
+def AllResponseAvgCompoundScore(response_array):
+    avg = 0
+    num_responses = len(response_array)
+
+    for i in range(num_responses):
+        avg += ResponseAvgCompoundScore(response_array[i])
+
+    avg = avg/num_responses
+
+    return(avg)
+
+def bin_calc(min, max, num_bins):
+    bins = []
+    inc = (max-min)/(num_bins)
+    val = min
+
+    while val <= max:
+        bins.append(round(val, 4))
+        val += inc
+
+    #print("Min=", min, "Max=", max, "inc=", inc)
+    #print("Bin values:",  bins)
+    #print(inc)
+
+    return(bins);
+
+def AvgCompoundScoreHist(response_array, num_bins):
+    from matplotlib import pyplot as plt
+    import seaborn as sn
+    import pylab as pl
+    import numpy as np
+
+
+    avg_compound_scores = []
+    avg_all_responses = 0
+
+    for i in range(len(response_array)):
+        response_avg_comp_score = round(float(ResponseAvgCompoundScore(response_array[i])),4)
+
+        avg_compound_scores.append(response_avg_comp_score)
+        avg_all_responses += response_avg_comp_score
+
+    avg_all_responses = round(avg_all_responses/(len(response_array)), 4)
+
+    bins = bin_calc(np.amin(avg_compound_scores), np.amax(avg_compound_scores), num_bins)
+
+    sn.set()
+
+    plt.hist(avg_compound_scores, bins, edgecolor="black")
+    title = "Sentiment Scores for Student's Reflective Writings \n (Avg. Compound Score: " + str(avg_all_responses) + ")"
+
+    plt.title(title)
+    plt.grid(True)
+
+    plt.ylabel("Number of Responses")
+    plt.xlabel("Compound Sentiment Score of Response")
+
+    plt.tight_layout()
+    plt.show()
+
+    return(avg_compound_scores)
+
+def SentimentWordSearch(response_array, str_list):
+    from nltk.tokenize import sent_tokenize
+
+    sentences_str = ""
+    matches = 0
+    score = 0
+
+    for str in str_list:
+        for i in range(len(response_array)):
+            st_response = list(sent_tokenize(response_array[i]))
+
+            for sentence in st_response:
+                if str in sentence:
+                    sentences_str += sentence + " "
+                    matches += 1
+        if sentences_str != "":
+            score = ResponseAvgCompoundScore(sentences_str)
+        elif sentences_str == "":
+            score = 0
+
+        print(matches, " matches for " , str, "; Avg. Compound Score: ", score)
+
+        matches = 0
+        sentence_str = ""
+    #ResponseAvgCompoundScore(sentence_list)

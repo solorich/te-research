@@ -8,11 +8,6 @@ from nltk.tokenize import word_tokenize
 with open("../Writings/Reflectivetest1.txt", "r") as myfile:
     contents_raw = myfile.read()
 
-'''Reading in individual responses'''
-'''*****************************************************'''
-response_array = af.ReadInResponses("../Writings/IndvResponses.csv")
-#print(response_array[0])
-
 '''Filtering Text'''
 '''******************************************************'''
 #Can filter out stopwords or a custom list
@@ -76,12 +71,26 @@ n=3
 #Puts the top num_grams_to_plot into a plot with associated ngram
 #af.CollocationTable(ngram_collocations, num_grams_to_plot=20)
 
+'''Reading in individual responses'''
+'''*****************************************************'''
+response_array = af.ReadInResponses("../Writings/IndvResponses.csv")
+#print(response_array[0])
+
 '''Sentiment Analysis'''
 '''***********************************************************'''
 #This analyzes the content overall to determine if it positive, negative, or neutral
-#sentiment_scores = af.Sentiment(response_array[0])
 
-#len(response_array)
+#sentiment_scores = af.ResponseSA(response_array[0])
 
-af.PrintSentimentValues(response_array)
-#print("Sentence:", sentiment_scores[5][])
+#af.PrintAllResponseSV(response_array)
+#af.PrintSingleResponseSV(response_array[0])
+
+#print(af.ResponseAvgCompoundScore(response_array[0]))
+
+#af.AllResponseSA(response_array)
+
+#af.AvgCompoundScoreHist(response_array, 12)
+
+#print(af.AllResponseAvgCompoundScore(response_array))
+
+af.SentimentWordSearch(response_array, ["TA", "Professor", "professor", "teacher", "Evan", "Wormhole", "homework", "lab", "20x", "lecture"])
