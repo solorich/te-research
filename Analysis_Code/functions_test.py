@@ -93,4 +93,4 @@ response_array = af.ReadInResponses("../Writings/IndvResponses.csv")
 
 #print(af.AllResponseAvgCompoundScore(response_array))
 
-af.SentimentWordSearch(response_array, ["TA", "Professor", "professor", "teacher", "Evan", "Wormhole", "homework", "lab", "20x", "lecture"])
+af.SentimentWordSearch(response_array, ["TA", "Professor", "professor", "teacher", "Evan", "Wormhole", "homework", "lab", "20x", "lecture", "exam", "LA", "bad", "hate", ])

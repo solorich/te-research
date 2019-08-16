@@ -338,13 +338,16 @@ def SentimentWordSearch(response_array, str_list):
                 if str in sentence:
                     sentences_str += sentence + " "
                     matches += 1
+
         if sentences_str != "":
+            #print(sentences_str)
             score = ResponseAvgCompoundScore(sentences_str)
+            #print(score)
         elif sentences_str == "":
             score = 0
 
         print(matches, " matches for " , str, "; Avg. Compound Score: ", score)
 
         matches = 0
-        sentence_str = ""
+        sentences_str = ""
     #ResponseAvgCompoundScore(sentence_list)
