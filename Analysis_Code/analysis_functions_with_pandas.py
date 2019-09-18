@@ -122,16 +122,43 @@ def FreqDistWeek(df, week_id):
 
     local_df = df.copy() #Creates a local copy of the word tokenized dataframe
 
+    #Tries to find the column with the given week ID
     try:
-        week_col = df.columns.get_loc(week_id)
+        week_col = local_df.columns.get_loc(week_id)
     except:
         print("There is no column named", week_id)
         return("")
 
-    word_list = []
+    word_list = [] #Initializes an empty list that will store each word
 
+    #Loops through each student's response for a given week and adds it to the word_list array
     for i in range(len(local_df)):
         word_list.extend(local_df.iloc[:,week_col][i])
+
+    #Creates the frequency distribution for that list of words
+    fdist = FreqDist(word_list)
+
+    return(fdist);
+
+def FreqDistStudent(df, stu_num):
+    from nltk.probability import FreqDist, DictionaryProbDist
+    import numpy as np
+
+    local_df = df.copy()
+
+    #Tries to find the row of a given student based off of the provided student number
+    try:
+        student = local_df['Number'] == stu_num #Looks for rows that match student number
+        student_df = local_df[student] #Takes subsection of the local_df that containts only the one student's responses for each week
+    except:
+        print("There is no student with ID number", stu_num, "Or some error occured")
+        return("")
+
+    word_list = []
+
+    #Puts each word from each week from the student's response into a list. For i=0, you get the column with the student's number. We don't need that, so we go from 1 to the last column for the student's row
+    for i in range(1,len(student_df.iloc[0])):
+        word_list.extend(student_df.iloc[0][i])
 
     fdist = FreqDist(word_list)
 
@@ -183,3 +210,66 @@ def Lemmatize(df):
             #print(local_df.iloc[:,1][j], "\n")
 
     return(wt_df);
+
+def ResponseAvgCompoundScore(response):
+    #This funciton takes in a response from the reflection dataframe and tokenizes each sentence in each response and then does a sentiment analysis on each sentence, and averages it for the response. This function returns a dataframe that contains student ID and the student's average compound sentiment score for each week.
+
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
+    from nltk.tokenize import sent_tokenize
+    import numpy as np
+
+    st_response = list(sent_tokenize(response)) #Tokenizes response into sentences
+
+    sia = SIA() #Sentence
+    avg = 0 #Initializes the average to be zero
+
+    for sentence in st_response:
+        avg += sia.polarity_scores(sentence)['compound']
+
+    if len(st_response) != 0:
+        avg = avg/len(st_response)
+    else:
+        #avg = "NaN" #Not sure if NaN or 0 is better. NaN is more true, but we can't plot NaN
+        avg = 0
+
+    return(avg)
+
+def SentimentAnalysis(df):
+    #This function will do a sentiment analysis on each student's response each week and then create a data frame with each student's average compound sentiment score for each week
+
+    local_df = df.copy()
+
+    for i in range(1, len(local_df.columns)):
+        for j in range(len(local_df)):
+            resp_avg = ResponseAvgCompoundScore(local_df.iloc[:,i][j]) #Gets the average compound score for one response from one week
+
+            local_df.iloc[:,i][j] = resp_avg
+
+    local_df = local_df.astype(float)
+
+    local_df = local_df.astype({"Number":int})
+
+    return(local_df)
+
+def Plot3DSA(sent_df):
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    import numpy as np
+    import pandas as pd
+
+    local_df = sent_df.copy()
+
+    x = np.arange(len(local_df.columns))
+    y = local_df.iloc[:,1][1]
+
+    print(y)
+    '''
+    X, Y = np.meshgrid(x,y)
+
+    Z = local_df.drop('Number', axis=1)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(X, Y, Z)
+    '''
